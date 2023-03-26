@@ -34,6 +34,45 @@ class Reservation:
             return f"{self._table.get_status()} at {self._time}"
 
 
+class Meniu:
+    def __init__(self) -> None:
+        self.menu = {
+            "breakfast": {
+                "Eggs Benedict": {"weight": 300, "prep_time": 15, "calories": 450, "price": 10.99},
+                "Belgian Waffles": {"weight": 400, "prep_time": 10, "calories": 600, "price": 7.99},
+                "Bagel and Lox": {"weight": 250, "prep_time": 8, "calories": 550, "price": 8.99}
+            },
+            "lunch": {
+                "Burger and Fries": {"weight": 500, "prep_time": 12, "calories": 850, "price": 12.99},
+                "Caesar Salad": {"weight": 350, "prep_time": 8, "calories": 350, "price": 6.99},
+                "Fish and Chips": {"weight": 450, "prep_time": 15, "calories": 800, "price": 10.99}
+            },
+            "dinner": {
+                "Steak and Potatoes": {"weight": 600, "prep_time": 20, "calories": 1200, "price": 22.99},
+                "Grilled Salmon": {"weight": 400, "prep_time": 18, "calories": 650, "price": 18.99},
+                "Vegetable Curry": {"weight": 350, "prep_time": 25, "calories": 400, "price": 15.99}
+            },
+            "drinks": {
+                "Soda": {"weight": 200, "prep_time": 1, "calories": 150, "price": 1.99},
+                "Iced Tea": {"weight": 250, "prep_time": 2, "calories": 100, "price": 2.99},
+                "Beer": {"weight": 350, "prep_time": 5, "calories": 200, "price": 4.99},
+                "Wine": {"weight": 400, "prep_time": 3, "calories": 250, "price": 6.99}
+            },
+            "Special": {
+                "Veggie Curry": {"weight": 200, "prep_time": 10, "calories": 150, "price": 8.99},
+                "Spinach Lasangne": {"weight": 200, "prep_time": 15, "calories": 100, "price": 9.99},
+                "Vegan Pizza": {"weight": 150, "prep_time": 10, "calories": 100, "price": 7.99},
+                "Veggie Burger": {"weight": 200, "prep_time": 10, "calories": 50, "price": 5}
+            }
+        }
+
+        self.menu = []
+
+
+class Order:
+    pass
+
+
 class Restaurant:
     def __init__(self):
         self._tables = [
