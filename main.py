@@ -27,7 +27,7 @@ class Reservation:
         self._table = table
         self._time = time
 
-    def info(self):
+    def get_reservation_info(self):
         if self._table.is_free():
             return f"Table {self._table._number} is free."
         else:
@@ -128,7 +128,7 @@ class Restaurant:
             reservation = next(
                 (r for r in self._reservations if r._table == table), None)
             if reservation:
-                print(reservation.info())
+                print(reservation.get_reservation_info())
             else:
                 print(f"Table {table._number} is reserved.")
 
