@@ -1,42 +1,30 @@
+import datetime
+from typing import List
+
+
 class Table:
-    def __init__(self, type: str,  number: int, capacity: int, reserved_by: str, time: str) -> None:
-        self._number: int = number
-        self._capacity: int = capacity
-        self._reserved_by: str = reserved_by
-        self._type: str = type
-        self.time: str = time
+    def __init__(self, table_number: int, capacity: int,) -> None:
+        self.table_number: int = table_number
+        self.capacity: int = capacity
+        self.reserved_by: str = None
 
     def is_free(self):
-        return self._reserved_by is None
+        return self.reserved_by is None
 
-    def reserve(self, name):
-        self._reserved_by = name
+    def reserve(self, name: str):
+        self.reserved_by = name
 
-    def unreserve(self):
-        self._reserved_by = None
-
-    def check_reservation(self):
-        if self._reserved_by == name:
-            return f"You are allready reserved Table {self.number} at {self._time}"
-
-    def get_status(self):
+    def get_status(self) -> str:
         if self.is_free():
-            return f"Table {self._number} [{self._type} - { self._capacity} ppl] - free"
+            return f"Table {self.table_number} - [{ self.capacity} ppl] - free"
         else:
-            return f"Table {self._number} [{self._type} - { self._capacity} ppl] - reserved by {self._reserved_by} at {self.time}"
+            return f"Table {self.table_number} - [{ self.capacity} ppl] - reserved by {self.reserved_by}, {time}."
 
 
 class Reservation:
-    def __init__(self, name, table, time):
-        self._name = name
-        self._table = table
-        self._time = time
-
-    def get_reservation_info(self):
-        if self._table.is_free():
-            return f"Table {self._table._number} is free."
-        else:
-            return f"{self._table.get_status()} at {self._time}"
+    def __init__(self, name: str, time: datetime) -> None:
+        self.name = name
+        self.time = time
 
 
 class Meniu:
@@ -47,25 +35,26 @@ class Order:
     pass
 
 
-class Restaurant:
-    def __init__(self):
-        self._tables = [
-            Table("Single", 1, 2, "John Wick", "19:30"),
-            Table("Single", 2, 2, "Edvinas", "20:00"),
-            Table("Double", 3, 4, None, None),
-            Table("Double", 4, 4, None, None),
-            Table("Family", 5, 6, None, None),
-            Table("Family", 6, 6, None, None)
+class Cafeteria:
+    def __init__(self) -> List:
+        self.tables = [
+            Table(1, 2),
+            Table(2, 2),
+            Table(3, 4),
+            Table(4, 4),
+            Table(5, 6),
+            Table(6, 6)
         ]
-        self._reservations = []
 
-    def get_free_tables(self):
-        return [table for table in self._tables if table.is_free()]
+        self.reservations: List = []
 
-    def show_table_status(self):
+    def get_free_tables(self) -> List:
+        return [table for table in self.tables if table.is_free()]
+
+    def show_table_status(self) -> None:
         free_tables = self.get_free_tables()
         occupied_tables = [
-            table for table in self._tables if not table.is_free()]
+            table for table in self.tables if not table.is_free()]
 
         print("Free tables:")
         for table in free_tables:
@@ -75,27 +64,27 @@ class Restaurant:
         for table in occupied_tables:
             print(table.get_status())
 
-    def reserve_table(self, name, capacity, time):
-        available_tables = [table for table in self._tables if table.is_free(
-        ) and table._capacity >= capacity]
+    def reserve_table(self, name: str, capacity: int, time: datetime) -> None:
+        available_tables = [table for table in self.tables if table.is_free(
+        ) and table.capacity >= capacity]
 
         if len(available_tables) == 0:
             print("Sorry, there are no available tables.")
             return
 
         print("Available tables:")
-        for i, table in enumerate(available_tables):
-            print(f"{i+1}. {table.get_status()}")
+        for _, table in enumerate(available_tables):
+            print(f"{_+1}. {table.get_status()}")
 
         choice = int(input("Enter table number to reserve: "))
         table = available_tables[choice]
         table.reserve(name)
-        reservation = Reservation(name, table, time)
-        self._reservations.append(reservation)
-        print(f"Table {table._number} reserved for {name} at {time}.")
+        reservation = Reservation(name, time)
+        self.reservations.append(reservation)
+        print(f"Table {table.table_number} reserved for {name} at {time}.")
 
 
-restaurant = Restaurant()
+cafeteria = Cafeteria()
 
 print("Welcome to our Cafeteria!")
 name = input("Please enter your name: ")
@@ -113,10 +102,10 @@ while True:
         capacity = int(input("How many people in your group? "))
         time = input(
             "What time would you like to reserve? Enter time in HH:MM ")
-        restaurant.reserve_table(name, capacity, time)
+        cafeteria.reserve_table(name, capacity, time)
 
     elif choice == 2:
-        restaurant.show_table_status()
+        cafeteria.show_table_status()
 
     elif choice == 3:
         break
