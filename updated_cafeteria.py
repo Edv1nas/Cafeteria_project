@@ -118,10 +118,10 @@ if __name__ == "__main__":
 
     print("Welcome to our Cafeteria!")
     name = input("Please enter your name: ")
-    number = input("Please enter table number to check: ")
+    number = int(input("Please enter table number to check: "))
     if cafeteria.check_reservation_by_name(name, number):
         print(
-            f"A reservation exists for {name} at table {number}")
+            f"A reservation exists for {name} at table {number}.")
     else:
         print(
             f"No reservation found for {name} at table {number}. Please make reservation if you want to stay inside!")
