@@ -1,6 +1,6 @@
 # pylint: disable=all
 from Utilities.database import connect_db
-from Utilities.schemas import tables_schema, reservations_schema
+from Utilities.schemas import reservations_schema, tables_schema
 from dataclasses import dataclass
 from pymongo.errors import OperationFailure
 from typing import List
@@ -31,11 +31,7 @@ class Cafeteria:
         self.tables_collection = self.database["tables"]
 
     def enable_schema_validation(self) -> None:
-        validation_rules = {
-            'validator': {
-                '$jsonSchema': reservations_schema
-            }
-        }
+        validation_rules = reservations_schema
 
         try:
             self.database.command(
@@ -45,11 +41,7 @@ class Cafeteria:
             print(
                 f"Failed to enable reservation collection schema validation: {e.details['errmsg']}")
 
-        validation_rules = {
-            'validator': {
-                '$jsonSchema': tables_schema
-            }
-        }
+        validation_rules = tables_schema
 
         try:
             self.database.command(
@@ -68,11 +60,8 @@ class Cafeteria:
 
     def get_tables_list(self) -> List[Table]:
         tables_data = self.tables_collection.find()
-        tables_list = []
-        for table_data in tables_data:
-            table = Table(
-                table_data['table_name'], table_data['table_number'], table_data['table_seats'])
-            tables_list.append(table)
+        tables_list = [Table(table_data['table_name'], table_data['table_number'], table_data['table_seats'])
+                       for table_data in tables_data]
         return tables_list
 
     def reserve_table(self, reserved_by: str, table_number: int, reservation_time: str) -> bool:
@@ -100,20 +89,15 @@ class Cafeteria:
     def get_reservation_info(self, table_obj: Table) -> Reservations:
         reservation_data = self.reservations_collection.find_one(
             {'table.table_number': table_obj.table_number})
-        if reservation_data:
-            return Reservations(reservation_data["reserved_by"], table_obj, reservation_data["reservation_time"])
-        return None
+        return reservation_data
 
     def get_free_tables_by_seats(self, seats: int) -> List[Table]:
-        free_tables = []
-        tables_data = self.tables_collection.find(
-            {'table_seats': {'$gte': seats}})
-        for table_data in tables_data:
-            table = Table(
-                table_data['table_name'], table_data['table_number'], table_data['table_seats'])
-            if self.get_reservation_info(table) is None:
-                free_tables.append(table)
-        return free_tables
+        return [
+            Table(table_data['table_name'],
+                  table_data['table_number'], table_data['table_seats'])
+            for table_data in self.tables_collection.find({'table_seats': {'$gte': seats}})
+            if not self.reservations_collection.find_one({'table.table_number': table_data['table_number']})
+        ]
 
     def get_reservations(self):
         reservation_data = list(self.reservations_collection.find(
@@ -125,9 +109,9 @@ class Cafeteria:
             {"reserved_by": name, "table.table_number": number})
         return reservation_data is not None
 
-    def delete_resevation_by_name(self, name: str) -> bool:
+    def delete_resevation_by_name(self, name: str, time: str) -> bool:
         delete_reservation = self.reservations_collection.delete_one(
-            {"reserved_by": name})
+            {"reserved_by": name, "reservation_time": time})
         return delete_reservation.deleted_count > 0
 
     def update_reservation_time(self, name: str, new_time: str) -> bool:

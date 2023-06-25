@@ -2,6 +2,7 @@ from up_cafeteria import Cafeteria
 
 if __name__ == "__main__":
     cafeteria = Cafeteria()
+    cafeteria.enable_schema_validation()
 
     print("Welcome to our Cafeteria!")
     name = input("Please enter your name: ")
@@ -10,7 +11,7 @@ if __name__ == "__main__":
         reservation_info = cafeteria.get_reservation_info(
             cafeteria.get_table_by_number(number))
         print(
-            f"A reservation exists for {name}, Table {number} at {reservation_info.reservation_time}.")
+            f"A reservation exists for {name}, Table {number} at {reservation_info['reservation_time']}.")
     else:
         print(
             f"No reservation found for {name} at table {number}. Please make reservation if you want to stay inside!")
@@ -42,9 +43,9 @@ if __name__ == "__main__":
 
             time = input(
                 "What time would you like to reserve? Enter time in HH:MM ")
-            for free_table in cafeteria.get_free_tables_by_seats(seats=seats):
+            for free_tables in cafeteria.get_free_tables_by_seats(seats=seats):
                 print(
-                    f"Table name: {free_table.table_name}, Table number: {free_table.table_number}, Seats: {free_table.table_seats}"
+                    f"Table name: {free_tables.table_name}, Table number: {free_tables.table_number}, Seats: {free_tables.table_seats}"
                 )
             selected_table = int(input("Selected table number: "))
             if cafeteria.reserve_table(name, selected_table, time):
@@ -58,16 +59,17 @@ if __name__ == "__main__":
                 info = cafeteria.get_reservation_info(reserved_table)
                 if info is None:
                     print(
-                        f"Table name: {reserved_table.table_name}, Table number: {reserved_table.table_number}, Seats: {reserved_table.table_seats}"
+                        f"Table name: {reserved_table['table_name']}, Table number: {reserved_table['table_number']}, Seats: {reserved_table['table_seats']}"
                     )
                 else:
                     print(
-                        f"Table name: {reserved_table.table_name}, Table number: {reserved_table.table_number}, Seats: {reserved_table.table_seats} [Reserved by: {info.reserved_by}]"
+                        f"Table name: {reserved_table['table_name']}, Table number: {reserved_table['table_number']}, Seats: {reserved_table['table_seats']} [Reserved by: {info['reserved_by']}]"
                     )
 
         elif choice == 4:
             client_name = input("Enter the name for reservation deletion: ")
-            if cafeteria.delete_resevation_by_name(client_name):
+            reservation_time = input("Enter the new reservation time: ")
+            if cafeteria.delete_resevation_by_name(client_name, reservation_time):
                 print(f"Successfully deleted reservation for: {client_name}")
             else:
                 print(f"No reservation found for: {client_name}")
