@@ -1,6 +1,8 @@
 # pylint: disable=all
 from Utilities.database import connect_db
+from Utilities.schemas import tables_schema, reservations_schema
 from dataclasses import dataclass
+from pymongo.errors import OperationFailure
 from typing import List
 
 
@@ -27,6 +29,35 @@ class Cafeteria:
         self.database = connect_db()
         self.reservations_collection = self.database["reservations"]
         self.tables_collection = self.database["tables"]
+
+    def enable_schema_validation(self) -> None:
+        validation_rules = {
+            'validator': {
+                '$jsonSchema': reservations_schema
+            }
+        }
+
+        try:
+            self.database.command(
+                'collMod', self.reservations_collection.name, **validation_rules)
+            print("Reservation collection schema validation enabled.")
+        except OperationFailure as e:
+            print(
+                f"Failed to enable reservation collection schema validation: {e.details['errmsg']}")
+
+        validation_rules = {
+            'validator': {
+                '$jsonSchema': tables_schema
+            }
+        }
+
+        try:
+            self.database.command(
+                'collMod', self.tables_collection.name, **validation_rules)
+            print("Tables collection schema validation enabled.")
+        except OperationFailure as e:
+            print(
+                f"Failed to enable tables collection schema validation: {e.details['errmsg']}")
 
     def get_table_by_number(self, table_number: int) -> Table:
         table_data = self.tables_collection.find_one(
