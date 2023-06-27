@@ -2,7 +2,7 @@ from up_cafeteria import Cafeteria
 
 if __name__ == "__main__":
     cafeteria = Cafeteria()
-    cafeteria.enable_schema_validation()
+    cafeteria._enable_schema_validation()
 
     print("Welcome to our Cafeteria!")
     name = input("Please enter your name: ")
